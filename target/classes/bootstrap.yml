@@ -10,6 +10,9 @@ spring:
     config:
       enabled: true
       uri: http://localhost:8087
+server:
+  port : 8093
+
 eureka:
   client:
     service-url:

@@ -10,6 +10,8 @@ import com.nttdata.consultmanagement.Model.Product;
 import com.nttdata.consultmanagement.Model.Transaction;
 import com.nttdata.consultmanagement.Service.consultService;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,13 +35,18 @@ public class consultController {
 
     //Permitir elaborar un resumen consolidado de un cliente con todos los productos que pueda tener en el banco.
     @GetMapping("/reportProductsByCustomer/{id}")
+	@TimeLimiter(name="createTime")
+	@CircuitBreaker(name="createCircuit")
 	public Flux<Product> reportProductsByCustomer(@PathVariable("id") String id){
 		return service.productsByCustomer(id);
 	}
 
 
 	//Generar un reporte completo y general por producto del banco en intervalo de tiempo especificado por el usuario.
+
 	@GetMapping("/reportByProductandDateRange")
+	@TimeLimiter(name="createTime")
+	@CircuitBreaker(name="createCircuit")
 	public Flux<Transaction> reportByProductandDateRange(@RequestParam String id,@RequestParam String startDate, @RequestParam String endDate ){
 		//Fechas en string a Date        
         LocalDate date = LocalDate.parse(startDate, formatter);
@@ -52,6 +59,8 @@ public class consultController {
 
 	//Implementar un reporte con los últimos 10 movimientos de la tarjeta de débito y de crédito
 	@GetMapping("/reportLastTentransactions/{id}")
+	@TimeLimiter(name="createTime")
+	@CircuitBreaker(name="createCircuit")
 	public Flux<Transaction> reportLastTentransactions(@PathVariable("id") String id ){
 		//Consultar servicio	
 		return service.reportLastTentransactions(id);
@@ -59,6 +68,8 @@ public class consultController {
 
 	//Consultar el saldo de la cuenta principal asociada a la tarjeta de débito
 	@GetMapping("/balanceByDebitCard/{id}")
+	@TimeLimiter(name="createTime")
+	@CircuitBreaker(name="createCircuit")
 	public Mono<ProductDto> balanceByDebitCard(@PathVariable("id") String id ){
 		//Consultar servicio	
 		return service.balanceByDebitCard(id);
